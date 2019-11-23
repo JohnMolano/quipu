@@ -1,5 +1,5 @@
 {
-  "name": "Ejemplo de Quipu",
+  "name": "quipu",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -17,7 +17,7 @@
     "express-session": "^1.17.0",
     "firebase": "^7.5.0",
     "pbkdf2-password": "^1.2.1",
-    "request": "^2.81.0",
+    "request": "^2.88.0",
     "uuid": "^3.3.3"
   }
 }
