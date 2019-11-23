@@ -1,0 +1,23 @@
+{
+  "name": "Ejemplo de Quipu",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "author": "John Molano",
+  "license": "freeware",
+  "homepage": "https://www.linkedin.com/in/jhon-rojas-7ba65b92/",
+  "dependencies": {
+    "body-parser": "^1.17.2",
+    "ejs": "^2.7.4",
+    "express": "^4.17.1",
+    "express-session": "^1.17.0",
+    "firebase": "^7.5.0",
+    "pbkdf2-password": "^1.2.1",
+    "request": "^2.81.0",
+    "uuid": "^3.3.3"
+  }
+}

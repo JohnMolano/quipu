@@ -1,0 +1,126 @@
+<% var title = 'Tokens' %>
+<% var active = 'tokens' %>
+<% include head %>
+
+<script type="text/javascript">
+  firebase.initializeApp(<%- JSON.stringify(firebaseConfig) %> );
+  const dbUser = 'tokens-<%- user.uid %>';
+  const db_tokens = firebase.database().ref().child(dbUser);  
+  let _tokens = [];
+  db_tokens.limitToLast(1000)
+    .on('value', token => {
+      if(token.val() !== null){
+        var html = "";
+        var cont = 0;
+        
+        _tokens = token.val()["tokens"];
+        $("#tbodyTokens").html("");
+        var tokensKey = Object.keys(_tokens);
+        for (var i=0; i<= tokensKey.length; i++) {
+          if(_tokens[tokensKey[i]]){
+            cont++;
+            html = '<tr>'+
+               '<td>'+cont+'</td>'+
+               '<td>'+_tokens[tokensKey[i]].token+'</td>'+
+              ' <td class="edit" id="edit-'+tokensKey[i]+'" item="'+tokensKey[i]+'" >'+_tokens[tokensKey[i]].sale_value+' <span>📝</span>'+
+              ' </td>'+
+               ' <td class="save" id="save-'+tokensKey[i]+'" item="'+tokensKey[i]+'"  style="display:none">'+_tokens[tokensKey[i]].sale_value+' <span item="'+tokensKey[i]+'" position="'+i+'" datajson=\''+JSON.stringify(_tokens[tokensKey[i]])+'\' >💾</span>'+
+                 ' <div class="input-group mb-3" id="sale_value-'+tokensKey[i]+'" >'+
+                    '<div class="input-group-prepend">'+
+                      '<span class="input-group-text" id="basic-addon1">$</span>'+
+                    '</div>'+
+                    '<input type="number" min="1" step="any" class="form-control input_sale_value"  value="'+_tokens[tokensKey[i]].sale_value+'" id="input_sale_value-'+tokensKey[i]+'" placeholder="sale_value" aria-label="sale_value" aria-describedby="basic-addon1">'+
+                  '</div>'+
+              ' </td>'+
+               '<td>'+
+                '<div class="progress">'+
+                 ' <div class="progress-bar bg-success" role="progressbar" style="width: '+_tokens[tokensKey[i]].changes+'%" aria-valuenow="'+_tokens[tokensKey[i]].changes+'" aria-valuemin="0" aria-valuemax="100"></div>'+
+                '</div>'+
+             ' </td>'+
+              '<td>'+_tokens[tokensKey[i]].date+'</td>'+
+             '</tr>';
+             $("#tbodyTokens").append(html);
+           }  
+        }
+        $("#total").html(cont);
+        
+        $(".edit").click(function(){
+          var item = $(this).attr( "item" );
+          $("#edit-"+item).hide();
+          $("#save-"+item).show();
+        });
+
+        $(".save span").click(function(){
+          var datajson = JSON.parse($(this).attr( "datajson" ));
+          var itemInput = $(this).attr( "item" );
+          var _value =  $("#input_sale_value-"+itemInput).val();
+          var itemUp = firebase.database().ref().child(dbUser+'/tokens/' + itemInput);
+          var changes = datajson.changes + 1;
+          firebase.database().ref().child(dbUser+'/tokens/' + itemInput).set({...datajson, sale_value: _value, changes: changes});
+
+          $("#save-"+itemInput).hide();
+          $("#edit-"+itemInput).show();
+        });
+      }
+    });
+    
+</script>
+<div class="wrapper fadeInDown">
+      <!-- tabla ini -->
+        <div class="row">
+          <div class="col-lg-12 grid-margin stretch-card">
+            <div class="card">
+              <div class="card-body">
+                <div class="fadeIn first">
+                  <div class="row">
+                     <div class="col-4">
+                        <!-- Icon -->
+                        <img src="https://media.licdn.com/dms/image/C560BAQFsCenImQeMsA/company-logo_200_200/0?e=2159024400&v=beta&t=mJH4733fcOCDggrBIUBv5tVSglBmarTbwwhQCbgQpx8" id="icon" alt="User Icon" />
+                     </div>
+                     <div class="col-8">
+                      <h4 class="card-title"><%- user.displayName %></h4>
+                      <div class="row">
+                        <div class="col-8">
+                          <p class="card-description"> Total tokens <code id="total">0</code> </p>
+                        </div>
+                        <div class="col-4">
+                            <a class="underlineHover" href="/logout">Salir</a>
+                        </div>
+                      </div>
+
+                      
+                     </div>
+                  </div>
+                  <div class="row">
+                     <div class="col-12">
+                        <% include tabs %>
+                     </div>
+                   </div>
+  
+                </div>
+                
+                <div class="table-responsive">
+                  <table class="table table-striped">
+                    <thead>
+                      <tr>
+                        <th> # </th>
+                        <th> token </th>
+                        <th> Valor venta </th>
+                        <th> Cambios </th>
+                        <th> Fecha </th>
+                      </tr>
+                    </thead>
+                    <tbody id="tbodyTokens">
+                      
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      <!-- tabla fin -->
+</div>
+
+
+<% include foot %>

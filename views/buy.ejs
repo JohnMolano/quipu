@@ -1,0 +1,152 @@
+<% var title = 'Compras' %>
+<% var active = 'buy' %>
+<% include head %>
+
+<script type="text/javascript">
+  firebase.initializeApp(<%- JSON.stringify(firebaseConfig) %> );
+  const dbUserTokens = 'tokens-<%- user.uid %>';
+  const dbUser = 'list-user';
+  const db_list_user = firebase.database().ref().child(dbUser); 
+  db_list_user.limitToLast(1000)
+    .on('value', list_user => {
+      if(list_user.val() !== null){
+        var _list_user = list_user.val();
+        var list_userKey = Object.keys(list_user.val());
+
+        var html = "";
+        var cont = 0;
+         $("#tbodyTokens").html("");
+        for (var i=0; i<= list_userKey.length; i++) {
+          if(_list_user[list_userKey[i]] && '<%- user.displayName %>' !== _list_user[list_userKey[i]].nameuser){
+
+            var _tokens = [];
+            const namedbuser = _list_user[list_userKey[i]].database;
+            //console.log(namedbuser, "namedbuser")
+            const nameuser = _list_user[list_userKey[i]].nameuser;
+            const db_list_user_tokens = firebase.database().ref().child(namedbuser);
+            
+            
+            
+            var _tokens = [];
+            db_list_user_tokens.limitToLast(1000)
+              .on('value', token => {
+                if(token.val() !== null){
+                  _tokens = token.val()["tokens"];
+                  var tokensKey = Object.keys(_tokens);
+                  for (var i=0; i<= tokensKey.length; i++) {
+                    if(_tokens[tokensKey[i]]){
+                      cont++;
+                      html = '<tr>'+
+                         '<td>'+cont+'</td>'+
+                         '<td>'+nameuser+'</td>'+
+                         '<td>'+_tokens[tokensKey[i]].token+'</td>'+
+                        ' <td item="'+tokensKey[i]+'" >'+_tokens[tokensKey[i]].sale_value+' '+
+                        ' </td>'+
+                         '<td>'+
+                          '<div class="progress">'+
+                           ' <div class="progress-bar bg-success" role="progressbar" style="width: '+_tokens[tokensKey[i]].changes+'%" aria-valuenow="'+_tokens[tokensKey[i]].changes+'" aria-valuemin="0" aria-valuemax="100"></div>'+
+                          '</div>'+
+                       ' </td>'+
+                        '<td>'+_tokens[tokensKey[i]].date+'</td>'+
+                        '<td><a class="underlineHover comprar" id="buy-'+tokensKey[i]+'" href="javascript:;" item="'+tokensKey[i]+'" namedbuser="'+namedbuser+'" datajson=\''+JSON.stringify(_tokens[tokensKey[i]])+'\'>Comprar</a></td>'+
+                       '</tr>';
+                       $("#tbodyTokens").append(html);
+                     }  
+                  }
+                  $("#total").html(cont);
+                  
+
+                  $(".comprar").click(function(){
+
+                    $(this).hide("");
+                    $("#tbodyTokens").html("");
+                    cont = 0;
+                    var _namedbuser = $(this).attr( "namedbuser" );
+                    var datajson = JSON.parse($(this).attr( "datajson" ));
+                    var itemInput = $(this).attr( "item" );
+                    /*Se registra la compra al nuevo dueño*/
+                    var itemUp = firebase.database().ref().child(dbUserTokens+'/tokens/');
+                    itemUp.push(datajson);
+
+                    /*Se guarda en el historico*/
+                    var itemHistorico = firebase.database().ref('/history');
+                    dataHistory = {token: datajson.token, buyer: '<%- user.displayName %>', seller: nameuser, purchase_value: datajson.sale_value, date: new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '')}
+                    itemHistorico.push(dataHistory);
+
+                    /*Se elimina del antiguo dueño*/
+                    var deleteToken = firebase.database().ref(_namedbuser+'/tokens/' + itemInput); 
+                    deleteToken.remove();
+
+                    location.reload();
+
+                  });
+                }
+              });
+
+            }
+        }
+      }
+
+  });
+</script>
+<div class="wrapper fadeInDown">
+      <!-- tabla fin -->
+        <div class="row">
+          <div class="col-lg-12 grid-margin stretch-card">
+            <div class="card">
+              <div class="card-body">
+                <div class="fadeIn first">
+                  <div class="row">
+                     <div class="col-4">
+                        <!-- Icon -->
+                        <img src="https://media.licdn.com/dms/image/C560BAQFsCenImQeMsA/company-logo_200_200/0?e=2159024400&v=beta&t=mJH4733fcOCDggrBIUBv5tVSglBmarTbwwhQCbgQpx8" id="icon" alt="User Icon" />
+                     </div>
+                     <div class="col-8">
+                      <h4 class="card-title"><%- user.displayName %></h4>
+                      <div class="row">
+                        <div class="col-8">
+                          <p class="card-description"> Total tokens <code id="total">0</code> </p>
+                        </div>
+                        <div class="col-4">
+                            <a class="underlineHover" href="/logout">Salir</a>
+                        </div>
+                      </div>
+
+                      
+                     </div>
+                  </div>
+                  <div class="row">
+                     <div class="col-12">
+                        <% include tabs %>
+                     </div>
+                   </div>
+  
+                </div>
+                
+                <div class="table-responsive">
+                  <table class="table table-striped">
+                    <thead>
+                      <tr>
+                        <th> # </th>
+                        <th> Dueño </th>
+                        <th> token </th>
+                        <th> Valor compra </th>
+                        <th> Cambios </th>
+                        <th> Fecha </th>
+                        <th> Comprar </th>
+                      </tr>
+                    </thead>
+                    <tbody id="tbodyTokens">
+                      
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      <!-- tabla fin -->
+</div>
+
+
+<% include foot %>

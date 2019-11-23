@@ -1,0 +1,31 @@
+<% var title = 'Ingresar' %>
+<% include head %>
+
+
+<div class="wrapper fadeInDown">
+  <div id="formContent" class="login">
+    <!-- Tabs Titles -->
+
+    <!-- Icon -->
+    <div class="fadeIn first">
+      <img src="https://media.licdn.com/dms/image/C560BAQFsCenImQeMsA/company-logo_200_200/0?e=2159024400&v=beta&t=mJH4733fcOCDggrBIUBv5tVSglBmarTbwwhQCbgQpx8" id="icon" alt="User Icon" />
+    </div>
+
+    <!-- Login Form -->
+    <form method="post" action="/login">
+      <%- message %>
+      <input type="text" id="username" class="fadeIn second" name="username" placeholder="Correo electrónico">
+      <input type="password" id="password" class="fadeIn third" name="password" placeholder="Clave">
+      <input type="submit" class="fadeIn fourth" value="Ingresar">
+    </form>
+
+    <!-- Remind Passowrd -->
+    <div id="formFooter">
+      <a class="underlineHover" href="/create_account">Crear cuenta</a>
+    </div>
+
+  </div>
+</div>
+
+
+<% include foot %>

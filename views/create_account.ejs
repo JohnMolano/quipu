@@ -1,0 +1,31 @@
+<% var title = 'Crear cuenta' %>
+<% include head %>
+
+
+<div class="wrapper fadeInDown">
+  <div id="formContent" class="login">
+    <!-- Tabs Titles -->
+
+    <!-- Icon -->
+    <div class="fadeIn first">
+      <img src="https://media.licdn.com/dms/image/C560BAQFsCenImQeMsA/company-logo_200_200/0?e=2159024400&v=beta&t=mJH4733fcOCDggrBIUBv5tVSglBmarTbwwhQCbgQpx8" id="icon" alt="User Icon" />
+    </div>
+
+    <!-- Login Form -->
+    <form method="post" action="/create_account">
+      <%- message %>
+      <input type="text" id="name" required="required" class="fadeIn second" name="name" placeholder="Nombre">
+      <input type="email" id="email" required="required" class="fadeIn third" name="username" placeholder="Correo electrónico">
+      <input type="password" pattern=".{6,}" id="password" required="required" class="fadeIn fourth" name="password" placeholder="Clave">
+      <input type="submit" class="fadeIn fourth" value="Crear">
+    </form>
+    <!-- Remind Passowrd -->
+    <div id="formFooter">
+      <a class="underlineHover" href="/login">Ingresar</a>
+    </div>
+
+  </div>
+</div>
+
+
+<% include foot %>
